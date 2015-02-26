@@ -43,6 +43,7 @@ Please check out the unit-test for some real codes.
 Here is a use case, assume we want to process data by multiple components. Each component look like this:
 
 .. code-block:: cpp
+
     // CompA.h
     struct CompA { static void process(Data& data); };
 
