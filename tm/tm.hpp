@@ -54,4 +54,4 @@ template <int N = 100> struct MaxDepth { static constexpr int depth = N; };
 #define VM_GET(Name) DETAIL_TM_LAST_FUNC_CALL(Name).value
 #define VM_SET(Name, Expr)                                                     \
     DETAIL_TM_DEFINE(Name, DETAIL_TM_NEXT_INDEX(Name), RetValue,               \
-                     decltype(Expr), Expr)
+                     decltype(Expr), (Expr))
