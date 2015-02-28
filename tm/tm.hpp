@@ -32,7 +32,7 @@ template <int N = 100> struct MaxDepth { static constexpr int depth = N; };
                     : __detail_tm_helper_##Name(n);                            \
     }
 
-#define DETAIL_TM_MAX_DEPTH(Name) TypeMutatorDetailMaxDepth##Name::depth
+#define DETAIL_TM_MAX_DEPTH(Name) DetailTypeMutatorMaxDepth##Name::depth
 #define DETAIL_TM_LAST_FUNC_CALL(Name)                                         \
     __detail_tm_helper_##Name(                                                 \
         ::type_mutator::detail::Cnt<DETAIL_TM_MAX_DEPTH(Name)>{})
@@ -42,7 +42,7 @@ template <int N = 100> struct MaxDepth { static constexpr int depth = N; };
 #define DETAIL_TM_NEXT_INDEX(Name) DETAIL_TM_LAST_RESULT(Name)::depth + 1
 
 #define TM_VAR(Name, ...)                                                      \
-    using TypeMutatorDetailMaxDepth##Name =                                    \
+    using DetailTypeMutatorMaxDepth##Name =                                    \
         ::type_mutator::detail::MaxDepth<__VA_ARGS__>;                         \
     DETAIL_TM_DEFINE(Name, 0, RetType, void, DETAIL_TM_EMPTY)
 
