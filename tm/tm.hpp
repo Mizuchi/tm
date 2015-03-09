@@ -1,5 +1,5 @@
-#ifndef __TYPE_MUTATOR_HEADER
-#define __TYPE_MUTATOR_HEADER
+#ifndef __TYPE_MUTATOR__GUARD__HEADER
+#define __TYPE_MUTATOR__GUARD__HEADER
 
 namespace type_mutator {
 namespace detail {
