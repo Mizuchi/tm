@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __TYPE_MUTATOR_HEADER
+#define __TYPE_MUTATOR_HEADER
 
 namespace type_mutator {
 namespace detail {
@@ -55,3 +56,5 @@ template <int N = 100> struct MaxDepth { static constexpr int depth = N; };
 #define VM_SET(Name, Expr)                                                     \
     DETAIL_TM_DEFINE(Name, DETAIL_TM_NEXT_INDEX(Name), RetValue,               \
                      decltype(Expr), (Expr))
+
+#endif
