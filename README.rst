@@ -22,13 +22,13 @@ This library is inspired by imperative programming. conceptually you could write
     SET(T, std::vector<double>);
     assert(GET(T) == std::vector<double>);
 
-    SET(T, facebook::type_list<int>);
-    assert(GET(T) == facebook::type_list<int>);
+    SET(T, fatal::type_list<int>);
+    assert(GET(T) == fatal::type_list<int>);
 
     // set T = GET(T).push_back(U);
     struct U {};
     SET(T, GET(T)::push_back<U>);
-    assert(GET(T) == facebook::type_list<int, U>);
+    assert(GET(T) == fatal::type_list<int, U>);
 
     namespace Scope {
     struct U {};
@@ -39,7 +39,7 @@ This library is inspired by imperative programming. conceptually you could write
     }
 
     // when we exits scope, it will be restored to the original value
-    assert(GET(T) == facebook::type_list<int, U>);
+    assert(GET(T) == fatal::type_list<int, U>);
 
 Please check out the unit-test for some real codes.
 
