@@ -151,3 +151,7 @@ Here is a use case, assume we want to process data by multiple components. Each 
 
     // Advantage, self-register, single source of truth, not runtime-penalty
 
+License
+=======
+
+Code is licensed under Reciprocal Public License 1.5 (RPL-1.5): https://opensource.org/licenses/RPL-1.5
