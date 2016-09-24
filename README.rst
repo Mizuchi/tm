@@ -32,7 +32,7 @@ This library is inspired by imperative programming. conceptually you could write
 
     namespace Scope {
     struct U {};
-    assert(GET(T) != boost::mpl::vector<int, double, U>); // not the same U
+    assert(GET(T) != fatal::type_list<int, U>); // not the same U
     SET(U, double); // set U = double
     SET(T, GET(U)); // set T = GET(U)
     assert(GET(T) == double);
