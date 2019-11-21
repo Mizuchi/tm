@@ -1,5 +1,4 @@
-#ifndef __TYPE_MUTATOR__GUARD__HEADER
-#define __TYPE_MUTATOR__GUARD__HEADER
+#pragma once
 
 namespace type_mutator {
 namespace detail {
@@ -11,29 +10,19 @@ template <class T, int N> struct RetType {
     static constexpr int depth = N;
 };
 
-template <class T, int N> struct RetValue {
-    using type = T;
-    static constexpr int depth = N;
-    T value;
-    constexpr RetValue(T t) : value(t) {}
-};
-
 template <int N = 100> struct MaxDepth { static constexpr int depth = N; };
 } // namespace detail
 } // namespace type_mutator
 
-#define DETAIL_TM_EMPTY
-
-#define DETAIL_TM_DEFINE(Name, Index, Return, Type, Expr)                      \
-    constexpr static ::type_mutator::detail::Return<Type, Index>               \
+#define DETAIL_TM_MAX_DEPTH(Name) DetailTypeMutatorMaxDepth##Name::depth
+#define DETAIL_TM_DEFINE(Name, Type, Index)                                    \
+    constexpr static ::type_mutator::detail::RetType<Type, Index>              \
         __detail_tm_helper_##Name(::type_mutator::detail::Cnt<Index> n) {      \
         static_assert(n.depth <= DETAIL_TM_MAX_DEPTH(Name),                    \
                       "TypeMutator " #Name ": Depth size is too small");       \
-        return true ? ::type_mutator::detail::Return<Type, n.depth>(Expr)      \
-                    : __detail_tm_helper_##Name(n);                            \
+        return {};                                                             \
     }
 
-#define DETAIL_TM_MAX_DEPTH(Name) DetailTypeMutatorMaxDepth##Name::depth
 #define DETAIL_TM_LAST_FUNC_CALL(Name)                                         \
     __detail_tm_helper_##Name(                                                 \
         ::type_mutator::detail::Cnt<DETAIL_TM_MAX_DEPTH(Name)>{})
@@ -45,16 +34,8 @@ template <int N = 100> struct MaxDepth { static constexpr int depth = N; };
 #define TM_VAR(Name, ...)                                                      \
     using DetailTypeMutatorMaxDepth##Name =                                    \
         ::type_mutator::detail::MaxDepth<__VA_ARGS__>;                         \
-    DETAIL_TM_DEFINE(Name, 0, RetType, void, DETAIL_TM_EMPTY)
+    DETAIL_TM_DEFINE(Name, void, 0)
 
 #define TM_GET(Name) DETAIL_TM_LAST_RESULT(Name)::type
 #define TM_SET(Name, Type)                                                     \
-    DETAIL_TM_DEFINE(Name, DETAIL_TM_NEXT_INDEX(Name), RetType, Type,          \
-                     DETAIL_TM_EMPTY)
-
-#define VM_GET(Name) DETAIL_TM_LAST_FUNC_CALL(Name).value
-#define VM_SET(Name, Expr)                                                     \
-    DETAIL_TM_DEFINE(Name, DETAIL_TM_NEXT_INDEX(Name), RetValue,               \
-                     decltype(Expr), (Expr))
-
-#endif
+    DETAIL_TM_DEFINE(Name, Type, DETAIL_TM_NEXT_INDEX(Name))

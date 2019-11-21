@@ -112,10 +112,6 @@ TM_VAR(NoUnusedWarning2, 0);
 TM_VAR(NoUnusedWarning3, 1);
 TM_SET(NoUnusedWarning3, void);
 
-TM_VAR(x);
-VM_SET(x, 2 + 2);
-static_assert(VM_GET(x) == 4, "");
-
 // Limitations:
 //
 // 1. TM_GET(T) could be used anywhere, but TM_SET(T) can't be used inside

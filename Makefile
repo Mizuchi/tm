@@ -10,7 +10,7 @@ clean:
 
 build/%.exe: test/%.cpp
 	mkdir -p build
-	clang++ $(CC_FLAGS) -o $@ $<
+	g++ $(CC_FLAGS) -o $@ $<
 	./$@
 
 -include $(EXE_FILES:.exe=.d)
