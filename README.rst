@@ -14,33 +14,36 @@ This library is inspired by imperative programming. It provides mutable variable
 .. code-block:: cpp
 
     VAR(T);           // define a variable T
+
+    // Using __VA_ARGS__ in case second argument contains ','
+    #define IS_SAME(T, ...) static_assert(is_same_v<GET(T), __VA_ARGS__>)
+
     IS_SAME(T, void); // by default T's value is void
-    
+
     SET(T, int); // set T = int
-    IS_SAME(T, int);
-    
+    IS_SAME(T, int); // Check T == int
+
     SET(T, double); // set T = double
-    IS_SAME(T, double);
-    
+    IS_SAME(T, double); // Check T == double
+
     SET(T, tuple<int, double>);
     IS_SAME(T, tuple<int, double>);
-    
+
     // Add float to the type list
     SET(T, decltype(tuple_cat(GET(T)(), tuple<float>())));
     IS_SAME(T, tuple<int, double, float>);
 
     GET(T) x;
     static_assert(is_same_v<decltype(x), tuple<int, double, float>>);
-    
+
     namespace Scope {
     IS_SAME(T, tuple<int, double, float>);
     SET(T, double);
     IS_SAME(T, double);
     } // namespace Scope
-    
+
     // when we exit scope, T will be restored to original value
     IS_SAME(T, tuple<int, double, float>);
-    SET(T, double);
 
 Here is a use case, assume we want to process data by multiple components. Each component look like this:
 
