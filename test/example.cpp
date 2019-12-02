@@ -9,36 +9,37 @@ using namespace std;
 #define SET TM_SET
 #define GET TM_GET
 
-// Using __VA_ARGS__ in case second argument contains ','
-#define IS_SAME(T, ...) static_assert(is_same_v<GET(T), __VA_ARGS__>)
+VAR(T);                                 // define a variable T
+static_assert(is_same_v<GET(T), void>); // by default T's value is void
 
-VAR(T);           // define a variable T
-IS_SAME(T, void); // by default T's value is void
+SET(T, int);                           // set T = int
+static_assert(is_same_v<GET(T), int>); // Check T == int
 
-SET(T, int); // set T = int
-IS_SAME(T, int);
-
-SET(T, double); // set T = double
-IS_SAME(T, double);
+SET(T, double);                           // set T = double
+static_assert(is_same_v<GET(T), double>); // Check T == double
 
 SET(T, tuple<int, double>);
-IS_SAME(T, tuple<int, double>);
+static_assert(is_same_v<GET(T), tuple<int, double>>);
 
 // Add float to the type list
 SET(T, decltype(tuple_cat(GET(T)(), tuple<float>())));
-IS_SAME(T, tuple<int, double, float>);
+static_assert(is_same_v<GET(T), tuple<int, double, float>>);
 
-GET(T) x;
-static_assert(is_same_v<decltype(x), tuple<int, double, float>>);
+GET(T) t; // use GET(T) to define C++ variable
+static_assert(is_same_v<decltype(t), tuple<int, double, float>>);
 
 namespace Scope {
-IS_SAME(T, tuple<int, double, float>);
+static_assert(is_same_v<GET(T), tuple<int, double, float>>);
 SET(T, double);
-IS_SAME(T, double);
+static_assert(is_same_v<GET(T), double>); // Check T == double
 } // namespace Scope
 
 // when we exit scope, T will be restored to original value
-IS_SAME(T, tuple<int, double, float>);
+static_assert(is_same_v<GET(T), tuple<int, double, float>>);
+
+// Using __VA_ARGS__ in case second argument contains ','
+#define IS_SAME(T, ...) static_assert(is_same_v<GET(T), __VA_ARGS__>)
+
 SET(T, double);
 
 class Class {
