@@ -9,7 +9,17 @@ Template metaprograms have no mutable variables - that is, no variable can chang
     // do something
     T = double; // illegal, you can't change variable's value
 
-This library is inspired by imperative programming. It provides mutable variables for template programming. Here are some real C++ code (you can find this in unit-test):
+This library is inspired by imperative programming. Basically you can use following API to create mutable variables for template programming:
+
+.. code-block:: cpp
+
+    VAR(T);        // define a variable T
+    SET(T, Type1); // Assign T = Type1
+    GET(T);        // This macro will be expanded to Type1
+    SET(T, Type2); // Re-assign T = Type2
+    GET(T);        // This macro will be expanded to Type2
+
+Here are some real C++ code which you can find in `test/example.cpp`:
 
 .. code-block:: cpp
 
