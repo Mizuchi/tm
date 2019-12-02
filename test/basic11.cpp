@@ -1,120 +1,116 @@
 #include <tm/tm.hpp>
 
-#include <map>
+#include <tuple>
 #include <type_traits>
 
 using namespace std;
 
-TM_VAR(T); // define a variable
+#define VAR TM_VAR
+#define SET TM_SET
+#define GET TM_GET
 
-static_assert(is_same<TM_GET(T), void>::value, ""); // initial T == void
+// Using __VA_ARGS__ in case second argument contains ','
+#define IS_SAME(T, ...) static_assert(is_same_v<GET(T), __VA_ARGS__>)
 
-TM_SET(T, int);                                    // set T = int
-static_assert(is_same<TM_GET(T), int>::value, ""); // T == int
+VAR(T);           // define a variable T
+IS_SAME(T, void); // by default T's value is void
 
-TM_SET(T, double); // set T = double
-static_assert(is_same<TM_GET(T), double>::value, "");
+SET(T, int); // set T = int
+IS_SAME(T, int);
 
-// we can't TM_SET(T, map<int, double>);
-// it doesn't work since C++ macro think there are 3 arguments.
-using Int2Double = map<int, double>;
-TM_SET(T, Int2Double);
-static_assert(is_same<TM_GET(T), Int2Double>::value, "");
+SET(T, double); // set T = double
+IS_SAME(T, double);
 
-TM_SET(T, double);
+SET(T, tuple<int, double>);
+IS_SAME(T, tuple<int, double>);
 
-class Scope {
-    // if we use TM_SET(T) inside class, we must redefine by TM_VAR(T)
-    TM_VAR(T);
-    static_assert(is_same<TM_GET(T), void>::value, "");
+// Add float to the type list
+SET(T, decltype(tuple_cat(GET(T)(), tuple<float>())));
+IS_SAME(T, tuple<int, double, float>);
 
-    TM_VAR(U);
-    TM_SET(U, TM_GET(T));
-    static_assert(is_same<TM_GET(U), void>::value, "");
+GET(T) x;
+static_assert(is_same_v<decltype(x), tuple<int, double, float>>);
 
-    TM_SET(T, double);
-    static_assert(is_same<TM_GET(T), double>::value, "");
+namespace Scope {
+IS_SAME(T, tuple<int, double, float>);
+SET(T, double);
+IS_SAME(T, double);
+} // namespace Scope
 
-    TM_SET(T, TM_GET(U));
-    static_assert(is_same<TM_GET(T), void>::value, "");
+// when we exit scope, T will be restored to original value
+IS_SAME(T, tuple<int, double, float>);
+SET(T, double);
+
+class Class {
+    // class is bit different than namespace.
+    // if we use SET(T) inside class, we must redefine by VAR(T)
+    VAR(T);
+    IS_SAME(T, void);
+
+    VAR(U);
+    SET(U, GET(T));
+    IS_SAME(U, void);
+
+    SET(T, double);
+    IS_SAME(T, double);
+
+    SET(T, GET(U));
+    IS_SAME(T, void);
 };
 
-class Scope2 {
-    // if we didn't use TM_SET(T) inside class, we don't need to TM_VAR(T);
-    static_assert(is_same<TM_GET(T), double>::value, "");
-    TM_VAR(U);
-    TM_SET(U, TM_GET(T));
-    static_assert(is_same<TM_GET(U), double>::value, "");
+class Class2 {
+    // if we don't use SET(T) inside class, we don't need VAR(T);
+    IS_SAME(T, double);
+    VAR(U);
+    SET(U, GET(T));
+    IS_SAME(U, double);
 };
 
-namespace scope {
-// namespace is little bit different than class, we could use TM_SET(T)
-// without using TM_VAR(T) (but it's okay to redefine by TM_VAR(T))
-TM_VAR(U);
-TM_SET(U, TM_GET(T));
-static_assert(is_same<TM_GET(U), double>::value, "");
-TM_SET(T, int);
-static_assert(is_same<TM_GET(T), int>::value, "");
-}
-
-namespace scope2 {
-// namespace is little bit different than class, we could use TM_SET(T)
-// without using TM_VAR(T) (but it's okay to redefine by TM_VAR(T))
-TM_VAR(T);
-TM_VAR(U);
-TM_SET(U, TM_GET(T));
-static_assert(is_same<TM_GET(U), void>::value, "");
-TM_SET(T, int);
-static_assert(is_same<TM_GET(T), int>::value, "");
-}
-
-// T is restored after leaving the namespace
-static_assert(is_same<TM_GET(T), double>::value, "");
-
-TM_VAR(Depth, 2 /* at most 2 TM_SET statements */);
-TM_SET(Depth, int);
-static_assert(is_same<TM_GET(Depth), int>::value, "");
-TM_SET(Depth, double);
-static_assert(is_same<TM_GET(Depth), double>::value, "");
-// TM_SET(Depth, void); // compile-error: exceed max depth
+VAR(Depth, 2 /* at most 2 SET statements */);
+SET(Depth, int);
+IS_SAME(Depth, int);
+SET(Depth, double);
+IS_SAME(Depth, double);
+// SET(Depth, void); // compile-error: exceed max depth
 
 int main() {
     class Scope1 {
-        TM_VAR(T);
+        VAR(T);
 
-        static_assert(is_same<TM_GET(T), void>::value, "");
+        IS_SAME(T, void);
 
-        TM_SET(T, int);
-        static_assert(is_same<TM_GET(T), int>::value, "");
+        SET(T, int);
+        IS_SAME(T, int);
 
-        TM_SET(T, double);
-        static_assert(is_same<TM_GET(T), double>::value, "");
+        SET(T, double);
+        IS_SAME(T, double);
+
         class Scope2 {
-            TM_VAR(T);
-            TM_SET(T, int);
-            static_assert(is_same<TM_GET(T), int>::value, "");
+            VAR(T);
+            SET(T, int);
+            IS_SAME(T, int);
 
-            TM_VAR(U);
-            TM_SET(U, TM_GET(T));
-            static_assert(is_same<TM_GET(U), int>::value, "");
+            VAR(U);
+            SET(U, GET(T));
+            IS_SAME(U, int);
 
-            TM_SET(T, double);
-            static_assert(is_same<TM_GET(T), double>::value, "");
+            SET(T, double);
+            IS_SAME(T, double);
 
-            TM_SET(T, TM_GET(U));
-            static_assert(is_same<TM_GET(T), int>::value, "");
+            SET(T, GET(U));
+            IS_SAME(T, int);
         };
     };
 }
 
-TM_VAR(NoUnusedWarning);
-TM_VAR(NoUnusedWarning2, 0);
-TM_VAR(NoUnusedWarning3, 1);
-TM_SET(NoUnusedWarning3, void);
+VAR(NoUnusedWarning);
+VAR(NoUnusedWarning2, 0);
+VAR(NoUnusedWarning3, 1);
+SET(NoUnusedWarning3, void);
 
 // Limitations:
 //
-// 1. TM_GET(T) could be used anywhere, but TM_SET(T) can't be used inside
+// 1. GET(T) could be used anywhere, but SET(T) can't be used inside
 // function.
 //
 // 2. "restored after leaving the namespace" semantics are counter intuitive to

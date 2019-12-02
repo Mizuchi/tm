@@ -9,39 +9,38 @@ Template metaprograms have no mutable variables - that is, no variable can chang
     // do something
     T = double; // illegal, you can't change variable's value
 
-This library is inspired by imperative programming. conceptually you could write some C++ code like this:
+This library is inspired by imperative programming. It provides mutable variables for template programming. Here are some real C++ code (you can find this in unit-test):
 
 .. code-block:: cpp
 
-    VAR(T); // define a variable T
-    assert(GET(T) == void); // by default T's value is void
-
+    VAR(T);           // define a variable T
+    IS_SAME(T, void); // by default T's value is void
+    
     SET(T, int); // set T = int
-    assert(GET(T) == int);
+    IS_SAME(T, int);
+    
+    SET(T, double); // set T = double
+    IS_SAME(T, double);
+    
+    SET(T, tuple<int, double>);
+    IS_SAME(T, tuple<int, double>);
+    
+    // Add float to the type list
+    SET(T, decltype(tuple_cat(GET(T)(), tuple<float>())));
+    IS_SAME(T, tuple<int, double, float>);
 
-    SET(T, std::vector<double>);
-    assert(GET(T) == std::vector<double>);
-
-    SET(T, fatal::type_list<int>);
-    assert(GET(T) == fatal::type_list<int>);
-
-    // set T = GET(T).push_back(U);
-    struct U {};
-    SET(T, GET(T)::push_back<U>);
-    assert(GET(T) == fatal::type_list<int, U>);
-
+    GET(T) x;
+    static_assert(is_same_v<decltype(x), tuple<int, double, float>>);
+    
     namespace Scope {
-    struct U {};
-    assert(GET(T) != fatal::type_list<int, U>); // not the same U
-    SET(U, double); // set U = double
-    SET(T, GET(U)); // set T = GET(U)
-    assert(GET(T) == double);
-    }
-
-    // when we exits scope, it will be restored to the original value
-    assert(GET(T) == fatal::type_list<int, U>);
-
-Please check out the unit-test for some real codes.
+    IS_SAME(T, tuple<int, double, float>);
+    SET(T, double);
+    IS_SAME(T, double);
+    } // namespace Scope
+    
+    // when we exit scope, T will be restored to original value
+    IS_SAME(T, tuple<int, double, float>);
+    SET(T, double);
 
 Here is a use case, assume we want to process data by multiple components. Each component look like this:
 

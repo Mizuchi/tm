@@ -15,8 +15,9 @@ template <int N = 100> struct MaxDepth { static constexpr int depth = N; };
 } // namespace type_mutator
 
 #define DETAIL_TM_MAX_DEPTH(Name) DetailTypeMutatorMaxDepth##Name::depth
-#define DETAIL_TM_DEFINE(Name, Type, Index)                                    \
-    constexpr static ::type_mutator::detail::RetType<Type, Index>              \
+
+#define DETAIL_TM_DEFINE(Name, Index, ...)                                     \
+    constexpr static ::type_mutator::detail::RetType<__VA_ARGS__, Index>              \
         __detail_tm_helper_##Name(::type_mutator::detail::Cnt<Index> n) {      \
         static_assert(n.depth <= DETAIL_TM_MAX_DEPTH(Name),                    \
                       "TypeMutator " #Name ": Depth size is too small");       \
@@ -34,8 +35,10 @@ template <int N = 100> struct MaxDepth { static constexpr int depth = N; };
 #define TM_VAR(Name, ...)                                                      \
     using DetailTypeMutatorMaxDepth##Name =                                    \
         ::type_mutator::detail::MaxDepth<__VA_ARGS__>;                         \
-    DETAIL_TM_DEFINE(Name, void, 0)
+    DETAIL_TM_DEFINE(Name, 0, void)
 
 #define TM_GET(Name) DETAIL_TM_LAST_RESULT(Name)::type
-#define TM_SET(Name, Type)                                                     \
-    DETAIL_TM_DEFINE(Name, Type, DETAIL_TM_NEXT_INDEX(Name))
+
+// Using __VA_ARGS__ in case second argument contains ','
+#define TM_SET(Name, ...)                                                      \
+    DETAIL_TM_DEFINE(Name, DETAIL_TM_NEXT_INDEX(Name), __VA_ARGS__)
