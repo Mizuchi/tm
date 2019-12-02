@@ -3,6 +3,7 @@
 CPP_FILES := $(wildcard test/*.cpp)
 EXE_FILES := $(addprefix build/,$(notdir $(CPP_FILES:.cpp=.exe)))
 CC_FLAGS += -MMD -Wall -Werror -Wextra -std=c++2a -I include
+CXX := $(or $(CXX),g++)
 
 all: $(EXE_FILES)
 clean:
@@ -10,7 +11,7 @@ clean:
 
 build/%.exe: test/%.cpp
 	mkdir -p build
-	g++ $(CC_FLAGS) -o $@ $<
+	$(CXX) $(CC_FLAGS) -o $@ $<
 	./$@
 
 -include $(EXE_FILES:.exe=.d)
