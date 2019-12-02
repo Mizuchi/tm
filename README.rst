@@ -27,7 +27,7 @@ This library is inspired by imperative programming. Basically you can use follow
     SET(T, Type2); // Re-assign T = Type2
     GET(T);        // This macro will be expanded to Type2
 
-Here are some real C++ code which you can find in `test/example.cpp`:
+Here are some real C++ code (try it online: https://godbolt.org/z/yfQb4K):
 
 .. code-block:: cpp
 
@@ -59,7 +59,7 @@ Here are some real C++ code which you can find in `test/example.cpp`:
     // when we exit scope, T will be restored to original value
     static_assert(is_same_v<GET(T), tuple<int, double, float>>);
 
-Here is a use case, assume we want to process data by multiple components. Each component look like this:
+Here is an use case IRL, assume we want to process data by multiple components. Each component look like this:
 
 .. code-block:: cpp
 
@@ -82,6 +82,7 @@ Here is a use case, assume we want to process data by multiple components. Each 
     #include "CompC.h"
     #include <fatal/type/type_list.h>
 
+    // https://github.com/facebook/fatal
     using CompList = lib::type_list<CompA, CompB, CompC>;
 
     int main() {
@@ -133,9 +134,9 @@ Here is a use case, assume we want to process data by multiple components. Each 
     // === Approach #3 ===
 
     // Comp.h
+    #include <tm/tm.hpp>
     #include <fatal/type/type_list.h>
-    #include <my_diff.h>
-    struct T {};
+    VAR(T);
     SET(T, lib::type_list<>);
 
     // CompA.h
