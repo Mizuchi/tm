@@ -1,7 +1,13 @@
-[![Travis Build Status](https://travis-ci.com/Mizuchi/tm.svg?branch=master)](https://travis-ci.com/Mizuchi/tm)
-
-Tutorial ![license](https://img.shields.io/badge/license-RPL%201.5-blueviolet)
+Tutorial |travis| |license|
 =========
+
+.. |travis| image:: https://travis-ci.com/Mizuchi/tm.svg?branch=master
+   :target: https://travis-ci.com/Mizuchi/tm
+   :alt: Travis Build Status
+
+.. |license| image:: https://img.shields.io/badge/license-RPL%201.5-blueviolet
+   :target: https://opensource.org/licenses/RPL-1.5
+   :alt: License: RPL-1.5
 
 Template metaprograms have no mutable variables - that is, no variable can change value once it has been initialized, therefore template metaprogramming can be seen as a form of functional programming.
 
