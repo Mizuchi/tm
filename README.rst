@@ -1,4 +1,6 @@
-Tutorial [<img alt="Build Status" src="https://travis-ci.com/Mizuchi/tm.svg?branch=master">][travis-url]
+[![Travis Build Status](https://travis-ci.com/Mizuchi/tm.svg?branch=master)](https://https://travis-ci.com/Mizuchi/tm)
+
+Tutorial
 =========
 
 Template metaprograms have no mutable variables - that is, no variable can change value once it has been initialized, therefore template metaprogramming can be seen as a form of functional programming.
